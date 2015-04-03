@@ -9,11 +9,10 @@ import json
 import csv
 
 
-# Should use app token to prevent request throttling
+# Use app token to prevent request throttling
 url = urlopen('https://data.cityofchicago.org/resource/ijzp-q8t2.json?$$app_token=riGeeqnG1oMsfm6AvIDNOoFzY').read()
 
 data = json.loads(url)
-print data
 
-
+print data[1000:1200]
 
