@@ -1,5 +1,5 @@
-# city_lab_team_awesome
-Spring 2015 City Lab - near repeat crime mapping
+Spring 2015 City Lab at UChicago Harris: 
+#Near repeat crime mapping
 
 #Purpose
 
