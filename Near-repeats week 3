@@ -1,0 +1,161 @@
+#Near repeats week 3 - kernel density estimations with Chicago crime data
+
+library(data.table)
+library(GISTools)
+library(rgdal)
+library(rgeos)
+library(ks)
+library(gpclib)
+library(ggplot2)
+library(sp)
+library(ellipse)
+library(snow)
+library(surveillance)
+library(reshape)
+library(raster)
+
+#import police beat boundaries and project onto Chicago map. Set wd accordingly...
+
+crimedata <- read.csv('~/Downloads/Crimes_-_2001_to_present.csv')
+crimedata.dt <- data.table(crimedata)
+names(crimedata.dt) <- tolower(names(crimedata.dt))
+
+#1.1: projecting police beats shapefile onto chicago map
+police.beats <- readOGR(".", "geo_aerh-rz74-1")
+police.beats <- spTransform(police.beats, CRS("+proj=longlat +datum=WGS84"))
+ChicagoMap <- qmap("chicago", extent="device", legent="topleft")  
+ChicagoMap <- ChicagoMap + geom_polygon(aes(x=long, y=lat, group=group), fill='grey', size=.2,color='red', data=police.beats, alpha=0)
+
+#1.2subset 2014 burglary data
+dt <- as.Date(posixify(burglary.data.dt$date))
+crime14 <- subset(burglary.data.dt, year==2014)
+crime14.dt <- data.table(crime14)
+
+
+#1.3 initial kde of chicago burglary data
+ChicagoMap + stat_density2d(aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), size=2, bins=4, data=crime14, geom='polygon')
+
+#2: higher resolution kdes using different kernel density packages in r.
+
+#2.1: create latitude and longitude projection to see points where 
+#burglaries have occcurred
+
+crimedata_loc.dt <- subset(crimedata.dt, !is.na(longitude) & !is.na(latitude)) #excludes data w/ missing latitude & longitude
+burglary.data.dt <- subset(crimedata_loc.dt, primary.type=='BURGLARY')
+#subsets burglary data
+ggplot() + geom_point(data = crime14, aes(x=longitude, y=latitude), alpha=.5, col="dodger blue") + ggtitle("Chicago Burglaries 2001-2015") + coord_equal()
+#plot of all burglaries in 2014. somewhat interesting, but not as useful as a kde...
+
+#2.2 Create the location matrix (latitude & longitude/X & Y coordinate)
+latitude <- as.double(crime14.dt$latitude)
+longitude <- as.double(crime14.dt$latitude)
+location <- matrix(c(latitude, longitude), ncol = 2)
+
+#2.3 Create kde using ks package
+fhat <- kde(x=location[,1])
+plot(fhat)
+
+#2.4 using GISTools to create kdes
+kde.dens = kde.points(pts, lims=chicago)
+level.plot(kde.dens)
+
+(code on Ripley's circumference modified from GitHub example...still working on trying to get the plot function to work for our data)
+
+#help functions 
+#sCircle <- function(n = 100, centre = c(0, 0), radius){
+#     theta <- seq(0, 2*pi, length = n)
+#     m <- cbind(cos(theta), sin(theta)) * radius
+#     m[, 1] <- m[, 1] + centre[1]
+#     m[, 2] <- m[, 2] + centre[2]
+#     colnames(m) <- c("x", "y")
+#     m
+
+#sWeights <- function(x, h, polygon) {  
+  #leCercle <- sCircle(centre = x, radius = 1.759*h)
+  #POLcercle <- as(leCercle[-nrow(leCercle),], "gpc.poly")
+  #return(area.poly(intersect(polygon, POLcercle)) / area.poly    #(POLcercle))
+#}
+
+#KDE functions
+
+#sKDE <- function(U, polygon, optimal = TRUE, h = .1, parallel = #FALSE, n_clusters = 4){
+  #if(!class(polygon) == "gpc.poly") polygon <- as(polygon, "gpc
+#.poly")
+  #if(class(U) == "data.frame") U <- as.matrix(U)
+  #IND <- which(is.na(U[, 1]) == FALSE)
+  #U <- U[IND,]
+  #n <- nrow(U)
+  #if(optimal){
+    #H <- Hpi(U, binned = FALSE)
+    #H <- matrix(c(sqrt(H[1, 1] * H[2, 2]), 0, 0, sqrt(H[1, 1] * 
+#H[2, 2])), 2, 2)
+  #}
+  #if(!optimal){
+    #H <- matrix(c(h, 0, 0, h), 2, 2)
+  #}
+
+  # Help function to compute weights
+  #poidsU <- function(i, U, h, POL){
+    #x <- as.numeric(U[i,])
+    #sWeights(x, h, POL)
+  #}
+  # Use parallel methods to compute if the number of observation #is a bit high
+  # Change the number of slaves according to the number of cores #your processor has
+  # It is recommended to use a maximum of the number of cores #minus one.
+  #if(parallel){
+    #cl <- makeCluster(n_clusters, type = "SOCK")
+    #clusterEvalQ(cl, library("gpclib"))
+    #clusterEvalQ(cl, library("sp"))
+    #clusterExport(cl, c("sCircle", "sWeights"))
+    #OMEGA <- parLapply(cl, 1:n, poidsU, U = U, h = sqrt(H[1, 1]), #POL = polygon)
+    #OMEGA <- do.call("c", OMEGA)
+    #stopCluster(cl)
+  #}else{
+    #OMEGA <- NULL
+    #for(i in 1:n){
+      #OMEGA <- c(OMEGA, poidsU(i, U, h = sqrt(H[1, 1]), POL = #polygon))
+    #}
+  #}
+
+
+  # Kernel Density Estimator
+  #fhat <- kde(U, H, w = 1/OMEGA,
+              #xmin = c(min(get.bbox(polygon)$x), min(get.bbox(polygon)$y)),
+              #xmax = c(max(get.bbox(polygon)$x), max(get.bbox#(polygon)$y)))
+  #fhat$estimate <- fhat$estimate * sum(1/OMEGA) / n
+
+  #vx <- unlist(fhat$eval.points[1])
+  #vy <- unlist(fhat$eval.points[2])
+  #VX <- cbind(rep(vx, each = length(vy)))
+  #VY <- cbind(rep(vy, length(vx)))
+  #VXY <- cbind(VX, VY)
+  #Ind <- matrix(inside.gpc.poly(x = VX, y = VY, polyregion = #polygon), length(vy), length(vx))
+  #f0 <- fhat
+  #f0$estimate[t(Ind) == 0] <- NA
+
+  #list(
+    #X = fhat$eval.points[[1]],
+    #Y = fhat$eval.points[[2]],
+    #Z = fhat$estimate,
+    #ZNA = f0$estimate,
+    #H = fhat$H,
+    #W = fhat$w)
+}# End of sKDE()
+
+#plot_sKDE <- function(smooth, breaks, polygon, coord, alpha_coord#s = .8, size_coords = .8, many_points = FALSE, colContour = #'white', colPoint = 'dodger blue', title, contour=TRUE, round = 2#, text_size=22){}
+
+#> obtenirMelt <- function(smoothed){
+#+     res <- melt(smoothed$ZNA)
+#+     res[,1] <- smoothed$X[res[,1]]
+#+     res[,2] <- smoothed$Y[res[,2]]
+#+     names(res) <- list("X","Y","ZNA")
+#+     return(res)
+#+ }
+
+#poidsU <- function(i, U, h, POL){
+#+     x <- as.numeric(U[i,])
+#+     sWeights(x, h, POL)
+#+ }
+
+#chicagol <- as(chicago, 'gpc.poly')
+chi_smooth_nc <- sKDE_without_c(U = location, polygon = chicagol, optimal=TRUE)
