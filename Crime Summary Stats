@@ -1,0 +1,112 @@
+#Chicago Crime Data Exploratory Data Analysis
+#University of Chicago Urban Impact Lab, Spring 2015
+#Coded by Louise Geraghty
+
+library(data.table)
+library(ggplot2)
+library(RSocrata)
+
+#Importing crime data
+Crimes_._2001_to_present <- read.csv("~/Downloads/Crimes_-_2001_to_present.csv")
+ View(Crimes_._2001_to_present)
+
+#Converting to data.table
+crimedata = data.table(Crimes_._2001_to_present)
+attach(crimedata)
+dim(crimedata)
+head(crimedata[,1:4])
+summary(crimedata)
+
+#Posixify to convert calendar date to string
+dt <- as.Date(posixify(crime$Date))
+
+#Summary tables for different tabulations in the crime data. In particular, I was interested in how often particuar crimes tended to be "domestic" and how often domestic crimes tended to result in an arrest.
+
+sum.by.type <- (crimedata$Primary.Type=="BURGLARY")
+table(crimedata$Primary.Type, crimedata$Domestic=='true')
+
+                                     FALSE   TRUE  
+  ARSON                               6651    349
+  ASSAULT                           214884  56863
+  BATTERY                           469345 349327
+  BURGLARY                          274579   1696
+  CONCEALED CARRY LICENSE VIOLATION     19      0
+  CRIM SEXUAL ASSAULT                14408   2127
+  CRIMINAL DAMAGE                   487467  37607
+  CRIMINAL TRESPASS                 130933   3960
+  DECEPTIVE PRACTICE                155477   1855
+  GAMBLING                           11185      3
+  HOMICIDE                            5024    379
+  HUMAN TRAFFICKING                      5      0
+  INTERFERENCE WITH PUBLIC OFFICER    9969     40
+  INTIMIDATION                        2270    345
+  KIDNAPPING                          3003    863
+  LIQUOR LAW VIOLATION                9378      7
+  MOTOR VEHICLE THEFT               210821    794
+  NARCOTICS                         526960    193
+  NON - CRIMINAL                        15      0
+  NON-CRIMINAL                          29      0
+  NON-CRIMINAL (SUBJECT SPECIFIED)       1      2
+  OBSCENITY                            234     30
+  OFFENSE INVOLVING CHILDREN         13684  16353
+  OTHER NARCOTIC VIOLATION              91      0
+  OTHER OFFENSE                     195474  81309
+  PROSTITUTION                       49789      4
+  PUBLIC INDECENCY                      98      1
+  PUBLIC PEACE VIOLATION             33662   1511
+  RITUALISM                              9      3
+  ROBBERY                           168145   2547
+  SEX OFFENSE                        14417   1171
+  STALKING                            1306    871
+  THEFT                             925358  20564
+  WEAPONS VIOLATION                  44367    133
+
+table(crimedata$Description=='DOMESTIC BATTERY SIMPLE', crimedata$Arrest)
+
+                  false    true
+  FALSE       1 2951687 1220557
+  TRUE        0  296764   90955
+
+table(Description) #there appear to be six types of aggravated domestic battery in the data set, according to the crime descriptions. These include Aggravated Domestic Battery, Aggravated Domestic Battery: Handgun, Aggravated Domestic Battery: Hands/Fist/Feet Serious Injury, Aggravated Domestic Battery: Knife/Cutting Inst, Aggravated Domestic Battery: Other Dang. Weapon, Aggravated Domestic Battery: Other Firearm.
+
+#Tables showing the arrest rates for various types of aggravated domestic battery.
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3248318 1311444
+  TRUE        0     133      68
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY: HANDS/FIST/FEET SERIOUS INJURY', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3247110 1310705
+  TRUE        0    1341     807
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY: HANDGUN', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3248246 1311408
+  TRUE        0     205     104
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY: KNIFE/CUTTING INST', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3242297 1307768
+  TRUE        0    6154    3744
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY: OTHER FIREARM', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3248360 1311468
+  TRUE        0      91      44
+
+> table(crimedata$Description=='AGGRAVATED DOMESTIC BATTERY: OTHER DANG WEAPON', crimedata$Arrest)
+       
+                  false    true
+  FALSE       1 3237983 1307824
+  TRUE        0   10468    3688
+
+#shows relative densities of domestic vs. non-domestic crimes along with the probability of arrest
+
+qplot(Arrest, data=crimedata, geom="density", fill=Domestic, alpha=I(.5), main="Distribution of Arrests", xlab="Arrests", ylab="Density")

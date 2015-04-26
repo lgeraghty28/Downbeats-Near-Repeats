@@ -1,0 +1,62 @@
+#Domestic battery incidence around holidays
+
+library(ggplot2)
+library(data.table)
+library(plyr)
+
+names(crimedata) <- tolower(names(crimedata))
+
+# aggravated domestic battery subset by "Description"
+> agg.dom.bat <- c('AGGRAVATED DOMESTIC BATTERY', 'AGGRAVATED DOMESTIC BATTERY: HANDGUN', 'AGGRAVATED DOMESTIC BATTERY: HANDS/FIST/FEET SERIOUS INJURY', 'AGGRAVATED DOMESTIC BATTERY: KNIFE/CUTTING INST', 'AGGRAVATED DOMESTIC BATTERY: OTHER DANG WEAPON', 'AGGRAVATED DOMESTIC BATTERY: OTHER FIREARM')
+
+# creating aggravated domestic battery subset
+crimedata$agg.dom.bat_str <- rep("not aggravated domestic battery", nrow(crimedata))
+crimedata$agg.dom.bat_str[crimedata$description %in% agg.dom.bat] <- "aggravated domestic battery"
+agg.dom.bat_data <- subset(crimedata, agg.dom.bat_str=='aggravated domestic battery')
+
+#holiday 1: christmas
+
+#month of december
+crimedata$month <- substring(crimedata$date, 1, 2)
+month <- substring(agg.dom.bat_data$date, 1, 2)
+crimedata$day <- substring(crimedata$date, 4, 5)
+day <- substring(agg.dom.bat_data$date, 4, 5)
+agg.dom.bat_data$month <- substring(agg.dom.bat_data$date, 1, 2)
+december <- subset(agg.dom.bat_data, month=='12')
+december$day <- substring(december$date, 4, 5)
+
+ggplot(agg.dom.bat_data)+geom_bar(aes(x=day, fill = description)) + theme(axis.text.x = element_text(angle = -90, hjust=1)) #all months for comparison
+
+#december plot
+ggplot(december)+geom_bar(aes(x=day, fill = description)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+holiday #2: thanksgiving
+november <- subset(agg.dom.bat_data, month=='11')
+november$day <- substring(november$date, 4, 5)
+ggplot(november)+geom_bar(aes(x=day, fill = description)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+#other month: march
+march <- subset(agg.dom.bat_data, month=='03')
+march$day <- substring(march$date, 4, 5)
+ggplot(march)+geom_bar(aes(x=day, fill = description)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+#all months
+ggplot(domestic.battery)+geom_bar(aes(x=day, fill = primary.type)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+#domestic battery (by primary type & domestic)
+battery <- subset(crimedata, primary.type=='BATTERY')
+domestic.battery <- subset(battery, domestic=='true') #349,327 total observations
+
+#december
+december <- subset(domestic.battery, month=='12')
+december$day <- substring(december$date, 4, 5)
+ggplot(december)+geom_bar(aes(x=day, fill = primary.type)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+#november
+november <- subset(domestic.battery, month=='11')
+november$day <- substring(november$date, 4, 5)
+ggplot(november)+geom_bar(aes(x=day, fill = primary.type)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+#march
+march <- subset(domestic.battery, month=='03')
+march$day <- substring(march$date, 4, 5)
+ggplot(march)+geom_bar(aes(x=day, fill = primary.type)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
