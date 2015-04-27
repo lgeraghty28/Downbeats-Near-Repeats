@@ -1,0 +1,46 @@
+#Graphs for week 3
+
+library(data.table)
+library(ggplot2)
+
+#reading csv data
+bdb <- read.csv("~/Downloads/bdb.csv", header=FALSE)
+bd <- fread("~/Downloads/bdb.csv")
+
+#subsetting community areas to plot time series 
+ca50 <- subset(bd, communityarea=='50')
+ca51 <- subset(bd, communityarea=='51')
+
+#We want the date column to be treated as "dates"
+ca50$date2 <- as.Date(ca50$date2, format="%m/%d/%Y")
+ca51$date2 <- as.Date(ca51$date2, format="%m/%d/%Y")
+
+#subset years to plot time series
+ca50$year.50 <- substring(ca50$date2, 1, 4) 
+ca51$year.51 <- substring(ca51$date2, 1, 4)
+year14_50 <- subset(ca50, ca50$year.50=='2014')
+year14_51 <- subset(ca51, ca51$year.51=='2014')
+
+#plotting time series of community areas 50 & 51 in 2014
+year14_50_plot <- ggplot(year14_50, aes(x=date2, y=numberofburglaries)) + geom_line() + xlab('Date') + ylab('Burglaries')
+year14_50_plot + ggtitle('Burglaries in Community Area 50 in the year 2014')
+year14_51_plot <- ggplot(year14_51, aes(x=date2, y=numberofburglaries)) + geom_line() + xlab('Date') + ylab('Burglaries')
+year14_51_plot + ggtitle('Burglaries in Community Area 51 in the year 2014')
+
+#Total burglaries in community areas 50 and 51 in 2014
+sum(year14_50$numberofburglaries)
+#44 burglaries in c.a. 50 in 2014
+
+sum(year14_51$numberofburglaries)
+#132 burglaries in c.a. 51 in 2014
+
+#Plotting years & months of burglaries in whole dataset
+lubdt <- mdy(bd$date2)
+ymd <- format(lubdt, "%Y-%m-%d")
+year <- year(lubdt)
+
+bd$year <- substring(bd$date2, 7, 10)
+ggplot(burglary_counts)+geom_bar(aes(x=year)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
+
+bd$month <- substring(bd$date2, 4, 5)
+ggplot(burglary_counts)+geom_bar(aes(x=month)) + theme(axis.text.x = element_text(angle = -90, hjust=1))
