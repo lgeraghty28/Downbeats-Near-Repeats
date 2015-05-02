@@ -690,6 +690,7 @@ def modified_knox(s_coords, t_coords, delta, tau, permutations=99):
     greater = np.ma.masked_greater_equal(distribution, stat)
     count = np.ma.count_masked(greater)
     pvalue = (count + 1.0) / (permutations + 1.0)
+
     # return results
     modknox_result = {'stat': stat, 'pvalue': pvalue}
     return modknox_result
