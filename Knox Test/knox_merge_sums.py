@@ -8,7 +8,7 @@ def get_knox_dict(source):
     with open(source, "rU") as csvfile:
         crimereader = csv.DictReader(csvfile)
         for row in crimereader:
-            if row["block"] in knox_dict.keys():
+            if row[" block"] in knox_dict.keys():
                 block = knox_dict[row["block"]]
                 block[1] += int(row["600"]) * float(row["knox600"])
                 block[2] += int(row["1200"]) * float(row["knox1200"])
@@ -16,7 +16,7 @@ def get_knox_dict(source):
                 block[4] += int(row["2400"]) * float(row["knox2400"])
                 block[5] += int(row["3000"]) * float(row["knox3000"])
             else:
-                community_area = int(row["community_area"])
+                beats = int(row["# beat"])
                 six = int(row["600"]) * float(row["knox600"])
                 twelve = int(row["1200"]) * float(row["knox1200"])
                 eighteen = int(row["1800"]) * float(row["knox1800"])
@@ -45,6 +45,6 @@ def make_matrix(knox_dict):
 
             
 if __name__ == "__main__":
-    knox_csv = "knox_merge_corrected.csv"
+    knox_csv = "result.csv"
     knox_dict = get_knox_dict(knox_csv)
     make_matrix(knox_dict)

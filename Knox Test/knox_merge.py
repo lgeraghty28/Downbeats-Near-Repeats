@@ -7,11 +7,11 @@ def get_knox_dict(source):
     with open(source, "rU") as csvfile:
         crimereader = csv.DictReader(csvfile)
         for row in crimereader:
-            community_area = row["ca"]
+            beat = row["beat"]
             day = row[" time"]
-            community_area = community_area[2:]
+            beat = beat[2:]
             day = str(int(day) + 1)
-            iden = "{0}:{1}".format(community_area, day)
+            iden = "{0}:{1}".format(beat, day)
             if not iden in knox_dict.keys():
                 dist600 = row[" knox600ft"]
                 p600 = row[" p600ft"]
@@ -30,12 +30,12 @@ def get_knox_dict(source):
                 pair3000 = (dist3000, p3000)
                 distances = (pair600, pair1200, pair1800, pair2400, pair3000)
                 knox_dict[iden] = distances
-                
+
         return knox_dict
 
 def make_matrix(knox_dict, source):
 
-    # crimes_dict is: "#(community_area):day" : distances
+    # crimes_dict is: "#(beat):day" : distances
     # where distances is: (600ft, 1200ft, 1800ft, 2400ft, 3000ft)
     # That is, the knox coefficient for each
 
@@ -43,18 +43,18 @@ def make_matrix(knox_dict, source):
         crimereader = csv.DictReader(csvfile)
 
         # Header
-        print "community_area,block,days_from_end,600,knox600,p-value,1200,knox1200,p-value,1800,knox1800,p-value,2400,knox2400,p-value,3000,knox3000,p-value"
+        print "beat,block,days_from_end,600,knox600,p-value,1200,knox1200,p-value,1800,knox1800,p-value,2400,knox2400,p-value,3000,knox3000,p-value"
 
         i = 0
         for row in crimereader:
-            community_area = row["community_area"]
+            beat = row["beat"]
             day = row["days_from_end"]
             day = day[2:]
-            iden = "{0}:{1}".format(community_area, day)
+            iden = "{0}:{1}".format(beat, day)
             try:
                 distances = knox_dict[iden]
                 print_line = ""
-                print_line += community_area
+                print_line += beat
                 print_line += ","
                 print_line += row["block"]
                 print_line += ","
@@ -93,9 +93,9 @@ def make_matrix(knox_dict, source):
             except KeyError:
                 pass
 
-            
+
 if __name__ == "__main__":
-    event_csv = "three_day_ring_matrix_9_predictor.csv"
-    knox_csv = "ringallcacorrected.csv"
+    event_csv = "3.25.15.csv"
+    knox_csv = "ringallbeatcorrected.csv"
     crimes_dict = get_knox_dict(knox_csv)
     make_matrix(crimes_dict, event_csv)
