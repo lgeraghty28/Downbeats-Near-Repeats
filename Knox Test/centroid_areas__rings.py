@@ -24,7 +24,7 @@ def get_crimes_list(source, centroid_dict):
     crimes = []         # Each entry is of the form:
                         # (days_from_end, distance_from_centroid, census_block)
 
-    start_date = date(day=29, month=3, year=2015)
+    start_date = date(day=21, month=3, year=2015)
     with open(source, "rU") as csvfile:
         crimereader = csv.DictReader(csvfile)
         for row in crimereader:

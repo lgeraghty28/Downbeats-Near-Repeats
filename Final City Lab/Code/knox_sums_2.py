@@ -1,4 +1,4 @@
-#sum knox coefficients to get "score" for each block
+# sum knox coefficients to get "score" for each block
 
 import shapefile
 from pandas import *
@@ -9,6 +9,7 @@ from pysal import cg
 from pysal.spatial_dynamics import util
 import csv
 
+# defines knox scores as 
 def get_knox_dict(source):
 
     knox_dict = {}
