@@ -42,7 +42,7 @@ def make_matrix(ring_dict, history_csv):
                 
 if __name__ == "__main__":
     ring_csv = "ring.csv"
-    history_csv = "collapse.events.3.28.csv"
+    history_csv = "3.5.collapse.events.csv"
     ring_dict = get_ring_dict(ring_csv)
     make_matrix(ring_dict, history_csv)
 

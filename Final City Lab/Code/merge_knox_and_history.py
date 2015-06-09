@@ -46,15 +46,3 @@ if __name__ == "__main__":
     ring_dict = get_ring_dict(ring_csv)
     make_matrix(ring_dict, history_csv)
 
-#d1 = pd.read_csv("coefficients.csv")
-
-#d2 = pd.read_csv("baseline2014_tract_season.csv")
-#d2=d2.rename(columns = {'Tract':'tract'})
-
-
-#result = merge(d1, d2, how='inner', on=['tract'])
-#result[0:]
-#result['expburgs'] = (result['600ft'] + result['1200ft'] + result['1800ft'] + result['2400ft'] + result['3000ft'])*result['Jan_Mar_ave']/38
-#result
-
-#numpy.savetxt('result.csv', result, delimiter=", ", fmt="%s", header="beat,block,day,tract,600ft,1200ft,1800ft,2400ft,3000ft,Jan_Mar_ave,Apr_Jun_ave,Jul_Sep_ave,Oct_Dec_ave,expburgs")

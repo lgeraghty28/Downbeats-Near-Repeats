@@ -37,7 +37,7 @@ def make_matrix(input_dict):
     with open("knox_sums.csv", "w") as csvfile:
         csvfile.write(print_line)
 
-d5 = get_knox_dict('3.28.coefficients.csv')
+d5 = get_knox_dict('3.5.coefficients.csv')
 make_matrix(d5)
 
 

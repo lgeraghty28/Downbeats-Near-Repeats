@@ -1,4 +1,4 @@
-# sum knox coefficients to get "score" for each block
+# sum knox coefficients to get "score" for each block and multiply by baseline in pandas dataframe
 
 import shapefile
 from pandas import *
@@ -9,7 +9,7 @@ from pysal import cg
 from pysal.spatial_dynamics import util
 import csv
 
-# defines knox scores as 
+# defines knox scores 
 def get_knox_dict(source):
 
     knox_dict = {}
@@ -50,8 +50,8 @@ d2 = pd.read_csv("../Data/baseline2014_tract_season.csv")
 
 
 result = merge(d1, d2, how='inner', on=['tract'])
-result['expburgs'] = (result['knox_sum'] )*result['Jan_Mar_ave']/38
-result['baseline']= result['Jan_Mar_ave']/38
+result['expburgs'] = (result['knox_sum'] )*result['Jan_Mar_ave']/38 #38 is the average number of census blocks in a census tract in Chicago
+result['baseline']= result['Jan_Mar_ave']/38 # Jan_Mar_ave is the three month burglary baseline per census tract
 
 result
 

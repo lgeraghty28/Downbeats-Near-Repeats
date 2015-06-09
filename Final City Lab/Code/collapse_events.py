@@ -1,4 +1,6 @@
 import csv
+
+# "collapses" burglary events happening every three days to match knox coefficient days
             
 def make_matrix(output_days, history_csv):
 
