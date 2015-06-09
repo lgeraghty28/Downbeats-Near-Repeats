@@ -52,6 +52,7 @@ def make_matrix(centroid_dict, crimes_list, time_threshold, space_list):
     # crimes is a list: [(X, Y, days_from_end)]
     # time_threshold is number of days from the start that we look back.
     # space_list lists our space thresholds (e.g. [600, 1200, ..].)
+    # uses Pythagorean theorem to find distance between centroid points for each observation
 
     header = "beat,tract,block,days_from_end"
     for distance in space_list:

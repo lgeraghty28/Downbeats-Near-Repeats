@@ -16,7 +16,7 @@ def get_knox_dict(source):
     with open(source, "rU") as csvfile:
         crimereader = csv.DictReader(csvfile)
         for row in crimereader:
-            row_sum = float(row["600ft"]) + float(row["1200ft"])# + float(row["1800ft"]) + float(row["2400ft"]) + float(row["3000ft"])
+            row_sum = float(row["600ft"]) + float(row["1200ft"]) + float(row["1800ft"]) + float(row["2400ft"]) + float(row["3000ft"])
             if row["block"] in knox_dict.keys():
                 knox_dict[row["block"]][2] += row_sum
             else:
