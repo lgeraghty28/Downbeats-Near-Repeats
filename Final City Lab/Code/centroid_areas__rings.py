@@ -83,6 +83,6 @@ if __name__ == "__main__":
     source = "../Data/chicago2015.csv"
     centroid_dict = get_centroid_dict(source)
     crimes = get_crimes_list(source, centroid_dict)
-    time_threshold = 1
+    time_threshold = 15
     space_list = [0, 600, 1200, 1800, 2400, 3000]
     make_matrix(centroid_dict, crimes, time_threshold, space_list)
