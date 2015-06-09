@@ -44,7 +44,7 @@ make_matrix(d5)
 
 d1 = pd.read_csv("knox_sums.csv")
 #d1 = pd.pivot_table(d1,index=["block","beat","tract"], aggfunc=np.sum)
-d2 = pd.read_csv("baseline2014_tract_season.csv")
+d2 = pd.read_csv("../Data/baseline2014_tract_season.csv")
 
 
 
