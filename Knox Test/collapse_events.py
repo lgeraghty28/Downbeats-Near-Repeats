@@ -31,6 +31,6 @@ def make_matrix(output_days, history_csv):
             
     
 if __name__ == "__main__":
-    history_csv = "events.csv"
+    history_csv = "centroid_crime_count_3.10.csv"
     output_days = [1,4,7,10,13]
     make_matrix(output_days, history_csv)
